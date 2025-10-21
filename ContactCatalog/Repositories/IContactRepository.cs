@@ -10,7 +10,7 @@ namespace ContactCatalog.Repositories
     public interface IContactRepository
     {
         void Add(Contact contact);
-        IEnumerable<Contact> ListAll();
+        IEnumerable<Contact> GetAll();
         IEnumerable<Contact> SearchByName(string name);
         IEnumerable<Contact> FilterByTag(string tag);
     }

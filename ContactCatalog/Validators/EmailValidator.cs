@@ -6,17 +6,18 @@ using System.Threading.Tasks;
 
 namespace ContactCatalog.Validators
 {
-    public class EmailValidator
+    public static class EmailValidator
     {
-        static bool IsValidEmial(string email)
+        public static bool IsValidEmail(string email)
         {
             try
             {
                 var addr = new System.Net.Mail.MailAddress(email);
                 return addr.Address == email;
             }
-            catch
+            catch(Exception ex)
             {
+                Console.WriteLine($"Unexpected error validating email. {ex.Message}");
                 return false;
             }
         }

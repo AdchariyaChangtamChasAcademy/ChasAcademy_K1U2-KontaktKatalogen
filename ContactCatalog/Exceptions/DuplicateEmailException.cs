@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ContactCatalog.Exceptions
 {
-    internal class DuplicateEmailException : Exception
+    public class DuplicateEmailException : Exception
     {
         public DuplicateEmailException(string email) : base($"{email} already exists.") { }
     }
