@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace ContactCatalog.Exceptions
 {
-    public class DuplicateEmailException : Exception
+    public class InvalidEmailException : Exception
     {
         public string Email { get; }
-        public DuplicateEmailException(string email) : base($"A contact with the email {email} already exists.") 
+        public InvalidEmailException(string email) : base($"The email {email} is invalid.")
         {
             Email = email;
         }
