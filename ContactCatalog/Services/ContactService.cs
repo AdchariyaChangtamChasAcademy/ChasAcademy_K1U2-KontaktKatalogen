@@ -39,12 +39,13 @@ namespace ContactCatalog.Services
             _logger.LogInformation("Added contact [Name: {Name} | Email: {Email} | Tags: {Tags}]", contact.Name, contact.Email, contact.Tags);
         }
 
-        // If _contacts is not empty, return all Contacts in _contacts else throw an InvalidOperationException
+        // Returns an IEnumerable<Contact> containing all contacts.
+        // Throws InvalidOperationException if the contacts list is empty.
         public IEnumerable<Contact> GetAll() => _contacts.Any() ? _contacts.Values : throw new InvalidOperationException("Contacts list is empty.");
 
         public IEnumerable<Contact> SearchByName(string name)
         {
-            // If there are no contacts, return empty enumerable
+            // If there are no contacts, throw InvalidOperationException
             if (!_contacts.Any()) throw new InvalidOperationException("Contacts list is empty");
 
             // Filter contacts by name (case-insensitive)
@@ -52,6 +53,7 @@ namespace ContactCatalog.Services
                                          .Where(c => c.Name
                                          .Contains(name, StringComparison.OrdinalIgnoreCase));
 
+            // If contact with name could not be found, throw InvalidOperationException
             if (!foundContacts.Any()) throw new InvalidOperationException($"Could not find {name} in list");
 
             return foundContacts;
@@ -67,6 +69,7 @@ namespace ContactCatalog.Services
                                          .Where(c => c.Tags.Any(t => t.Equals(tag, StringComparison.OrdinalIgnoreCase)))
                                          .OrderBy(c => c.Name);
 
+            // If contact with tag could not be found, throw InvalidOperationException
             if (!foundContacts.Any()) throw new InvalidOperationException(tag);
 
             return foundContacts;
