@@ -21,7 +21,7 @@ namespace ContactCatalog
             _service = service;
             _logger = logger;
         }
-        public void StartMenu()
+        public void Run()
         {
             while (true)
             {
@@ -63,15 +63,11 @@ namespace ContactCatalog
 
             try
             {
-                _service.Add(new Contact { Name = name, Email = email, Tags = tags.ToList() });
+                _service.AddContact(new Contact { Name = name, Email = email, Tags = tags.ToList() });
             }
-            catch (InvalidEmailException ex)
+            catch (Exception ex) when (ex is InvalidEmailException || ex is DuplicateEmailException)
             {
-                _logger.LogWarning("Validation error trying to add email: {Reason}", ex.Message);
-            }
-            catch (DuplicateEmailException ex)
-            {
-                _logger.LogWarning("Duplication error trying to add email: {Reason}", ex.Message);
+                _logger.LogWarning("Adding email could not be completed: {Reason}", ex.Message);
             }
             finally
             {
@@ -87,11 +83,11 @@ namespace ContactCatalog
                 Console.WriteLine("=== Contact Catalog : List ===");
 
                 foreach (var c in _service.GetAll())
-                    Console.WriteLine($"{c.Id}: {c.Name} | {c.Email} | {string.Join(", ", c.Tags)}");
+                    Console.WriteLine($"({c.Id}) {c.Name} <{c.Email}> [{string.Join(", ", c.Tags)}]");
             }
             catch (InvalidOperationException ex)
             {
-                _logger.LogWarning("Operation error trying to list all contacts: {Reason}", ex.Message);
+                _logger.LogWarning("List all contacts could not be completed: {Reason}", ex.Message);
             }
 
             Pause();
@@ -107,8 +103,6 @@ namespace ContactCatalog
                 Console.Write("Name to seach: ");
                 var name = Console.ReadLine()!;
 
-                var foundContacts = _service.SearchByName(name).ToList();
-
                 Console.WriteLine("\n== Found contacts ==");
                 foreach (var c in _service.SearchByName(name))
                     Console.WriteLine($"{c.Id}: {c.Name}");
@@ -116,7 +110,7 @@ namespace ContactCatalog
             }
             catch (InvalidOperationException ex)
             {
-                _logger.LogWarning("Contacts with tag could not be found: {Reason}", ex.Message);
+                _logger.LogWarning("Contacts with name could not be found: {Reason}", ex.Message);
             }
 
             Pause();
@@ -138,7 +132,7 @@ namespace ContactCatalog
             }
             catch (InvalidOperationException ex)
             {
-                _logger.LogWarning("Contacts list is empty could not find tag: {Reason}", ex.Message);
+                _logger.LogWarning("Contacts with tag could not find tag: {Reason}", ex.Message);
             }
 
             Pause();
@@ -146,7 +140,33 @@ namespace ContactCatalog
 
         public void ExportCSV()
         {
+            try
+            {
+                Console.Clear();
+                Console.WriteLine("=== Contact Catalog : Export CSV ===");
 
+                Console.Write("File name: ");
+                var fileName = Console.ReadLine()!;
+                var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
+                var fileWriter = new FileWriterService(filePath);
+
+                _service.ExportToCsv(fileWriter);
+                Console.WriteLine(Environment.CurrentDirectory);
+            }
+            catch (IOException ex)
+            {
+                _logger.LogError(ex, "I/O error during export");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogError(ex, "Unauthorized access during export");
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning("Exporting contact to CSV could not be completed: {Reason}", ex.Message);
+            }
+            
+            Pause();
         }
 
         public void Pause()

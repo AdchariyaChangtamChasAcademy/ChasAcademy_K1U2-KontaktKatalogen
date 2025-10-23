@@ -1,6 +1,8 @@
-﻿using ContactCatalog.Repositories;
+﻿using ContactCatalog.Models;
+using ContactCatalog.Repositories;
 using ContactCatalog.Services;
 using Microsoft.Extensions.Logging;
+using System.Xml.Linq;
 
 namespace ContactCatalog
 {
@@ -12,7 +14,12 @@ namespace ContactCatalog
             var logger = loggerFactory.CreateLogger<ContactService>();
             var service = new ContactService(logger);
             var menu = new Menu(service, logger);
-            menu.StartMenu();
+
+            service.AddContact(new Contact { Name = "Alice", Email = "alice@mail.com", Tags = new string[] { "Work", "Friend" }.ToList() });
+            service.AddContact(new Contact { Name = "Bob", Email = "bob@mail.com", Tags = new string[] { "Club", "Friend", "Besty" }.ToList() });
+            service.AddContact(new Contact { Name = "Charlie", Email = "charlie@mail.com", Tags = new string[] { "Work", "Rival" }.ToList() });
+
+            menu.Run();
         }
     }
 }

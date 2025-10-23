@@ -8,10 +8,10 @@ namespace ContactCatalog.Exceptions
 {
     public class InvalidEmailException : Exception
     {
-        public string Email { get; }
-        public InvalidEmailException(string email) : base($"The email {email} is invalid.")
+        public string InvalidEmail { get; }
+        public InvalidEmailException(string email) : base($"'{email}' is not in a valid email form.")
         {
-            Email = email;
+            InvalidEmail = email;
         }
     }
 }

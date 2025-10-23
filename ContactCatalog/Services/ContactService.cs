@@ -1,5 +1,6 @@
 ﻿using ContactCatalog.Exceptions;
 using ContactCatalog.Models;
+using ContactCatalog.Repositories;
 using ContactCatalog.Validators;
 using Microsoft.Extensions.Logging;
 using System;
@@ -22,7 +23,7 @@ namespace ContactCatalog.Services
             _logger = logger;
         }
 
-        public void Add(Contact contact)
+        public void AddContact(Contact contact)
         {
             // If _emails is not a valid email, throw an InvalidEmailException
             if (!EmailValidator.IsValidEmail(contact.Email))
@@ -36,7 +37,7 @@ namespace ContactCatalog.Services
             contact.Id = _idCount++;
             _contacts[contact.Id] = contact;
             _emails.Add(contact.Email);
-            _logger.LogInformation("Added contact [Name: {Name} | Email: {Email} | Tags: {Tags}]", contact.Name, contact.Email, contact.Tags);
+            _logger.LogInformation("Added contact ({Id}) {Name} <{Email}> [{Tags}]", contact.Id, contact.Name, contact.Email, contact.Tags);
         }
 
         // Returns an IEnumerable<Contact> containing all contacts.
@@ -46,7 +47,8 @@ namespace ContactCatalog.Services
         public IEnumerable<Contact> SearchByName(string name)
         {
             // If there are no contacts, throw InvalidOperationException
-            if (!_contacts.Any()) throw new InvalidOperationException("Contacts list is empty");
+            if (_contacts == null || !_contacts.Any()) 
+                throw new InvalidOperationException("Contacts list is empty");
 
             // Filter contacts by name (case-insensitive)
             var foundContacts = _contacts.Values
@@ -54,15 +56,37 @@ namespace ContactCatalog.Services
                                          .Contains(name, StringComparison.OrdinalIgnoreCase));
 
             // If contact with name could not be found, throw InvalidOperationException
-            if (!foundContacts.Any()) throw new InvalidOperationException($"Could not find {name} in list");
+            if (!foundContacts.Any()) throw new InvalidOperationException($"Could not find '{name}' in list");
 
+            // Log information
+            _logger.LogInformation("'{Count}' Contacts found with given name: '{Name}'", foundContacts.Count(), name);
             return foundContacts;
+        }
+
+        public IEnumerable<Contact> GetByEmail(string email)
+        {
+            // If there are no contacts, throw InvalidOperationException
+            if (_contacts == null || !_contacts.Any())
+                throw new InvalidOperationException("Contacts list is empty");
+
+            // Filter contacts by name (case-insensitive)
+            var foundContact = _contacts.Values
+                                         .Where(c => c.Email
+                                         .Contains(email, StringComparison.OrdinalIgnoreCase));
+
+            // If contact with name could not be found, throw InvalidOperationException
+            if (!foundContact.Any()) throw new InvalidOperationException($"Could not find '{email}' in list");
+
+            // Log information
+            _logger.LogInformation("'{Count}' Contacts found with given name: '{Name}'", foundContact.Count(), email);
+            return foundContact;
         }
 
         public IEnumerable<Contact> FilterByTag(string tag)
         {
             // If _contacts is empty, throw an InvalidOperationException
-            if (!_contacts.Any()) throw new InvalidOperationException(tag);
+            if (_contacts == null || !_contacts.Any()) 
+                throw new InvalidOperationException(tag);
 
             // Filter contacts by tags that contains the given tag. (Case-insensitive and ordered alphabetically by names)
             var foundContacts = _contacts.Values
@@ -73,6 +97,42 @@ namespace ContactCatalog.Services
             if (!foundContacts.Any()) throw new InvalidOperationException(tag);
 
             return foundContacts;
+        }
+
+        public void ExportToCsv(IFileWriter fileWriter)
+        {
+            // Check for empty contacts
+            if (_contacts == null || !_contacts.Any())
+                throw new InvalidOperationException("Contacts list is empty");
+
+            // Write CSV header
+            fileWriter.WriteLine("Id,Name,Email,Tags");
+
+            // Write each contactd
+            foreach (var contact in _contacts.Values)
+            {
+                var tags = string.Join(";", contact.Tags); // semicolon to avoid conflicts
+                fileWriter.WriteLine($"{contact.Id},{EscapeCsv(contact.Name)},{EscapeCsv(contact.Email)},{EscapeCsv(tags)}");
+            }
+            // Dispose to complete the writing to file
+            fileWriter.Dispose();
+
+            // Log information
+            _logger.LogInformation("Contacts exported to '{FilePath}'", Environment.CurrentDirectory);
+        }
+
+        private string EscapeCsv(string value)
+        {
+            // Check for empty string
+            if (string.IsNullOrEmpty(value)) return "";
+
+            // Check for special characters
+            if (value.Contains(",") || value.Contains("\"") || value.Contains("\n"))
+                // Wrap in quotes and escape inner quotes if needed, csv formatting
+                return $"\"{value.Replace("\"", "\"\"")}\"";
+
+            // If there are no special characters, return value
+            return value;
         }
     }
 }

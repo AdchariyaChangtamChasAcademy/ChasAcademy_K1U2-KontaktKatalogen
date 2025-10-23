@@ -8,10 +8,10 @@ namespace ContactCatalog.Exceptions
 {
     public class DuplicateEmailException : Exception
     {
-        public string Email { get; }
-        public DuplicateEmailException(string email) : base($"A contact with the email {email} already exists.") 
+        public string DuplicateEmail { get; }
+        public DuplicateEmailException(string email) : base($"'{email}' already exists.") 
         {
-            Email = email;
+            DuplicateEmail = email;
         }
     }
 }

@@ -10,32 +10,47 @@ namespace ContactCatalog.Tests
 {
     public class EmailValidatorTests
     {
-        [Fact]
-        public void GivenValidEmail_WhenValidated_ThenReturnTrue()
+        [Theory]
+        [InlineData("validEmail@Example.com")]
+        [InlineData("SecondValidEmail@Example.com")]
+        public void GivenValidEmail_WhenValidated_ThenReturnTrue(string email)
         {
-            bool result = EmailValidator.IsValidEmail("validEmail@example.com");
+            // Given, email from inlinedata
+            // When, validating email with EmailValidator.IsValidEmail()
+            bool result = EmailValidator.IsValidEmail(email);
+
+            // Then, verify if true
             Assert.True(result);
         }
 
         [Fact]
         public void GivenInvalidEmail_WhenValidated_ThenReturnFalse()
         {
+            // Given, email "invalidEmailExample"
+            // When, validating email with EmailValidator.IsValidEmail()
             bool result = EmailValidator.IsValidEmail("invalidEmailExample");
+
+            // Then, verify if false
             Assert.False(result);
         }
 
         [Fact]
         public void GivenExistingEmail_WhenAddingContact_ThenThrowDuplicateEmailException()
         {
-            // Given
+            // Given, a contact service with one contact already added
             var logger = Mock.Of<ILogger<ContactService>>();
             var service = new ContactService(logger);
+            var existingContact = new Contact { Name = "Alice", Email = "a@a.com" };
+            service.AddContact(existingContact);
 
-            // When
-            service.Add(new Contact { Name = "Alice", Email = "a@a.com" });
+            // When, we try to add another contact with the same email
+            var newContact = new Contact { Name = "Bob", Email = "a@a.com" };
 
-            // Then
-            Assert.Throws<DuplicateEmailException>(() => service.Add(new Contact { Name = "Bob", Email = "a@a.com" }));
+            // Then, a DuplicateEmailException is thrown
+            var exception = Assert.Throws<DuplicateEmailException>(() => service.AddContact(newContact));
+
+            // (Verify if exception message is as expected)
+            Assert.Equal("'a@a.com' already exists.", exception.Message);
         }
     }
 }

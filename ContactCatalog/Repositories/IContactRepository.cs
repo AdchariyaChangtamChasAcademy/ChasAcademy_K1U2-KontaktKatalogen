@@ -9,9 +9,11 @@ namespace ContactCatalog.Repositories
 {
     public interface IContactRepository
     {
-        void Add(Contact contact);
+        void AddContact(Contact contact);
         IEnumerable<Contact> GetAll();
         IEnumerable<Contact> SearchByName(string name);
         IEnumerable<Contact> FilterByTag(string tag);
+
+        IEnumerable<Contact> GetByEmail(string email);
     }
 }
