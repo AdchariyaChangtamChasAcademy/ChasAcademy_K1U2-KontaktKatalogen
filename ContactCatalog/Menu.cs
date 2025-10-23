@@ -30,8 +30,9 @@ namespace ContactCatalog
                 Console.WriteLine("1) Add");
                 Console.WriteLine("2) List");
                 Console.WriteLine("3) Search by name");
-                Console.WriteLine("4) Filter by Tag");
-                Console.WriteLine("5) Export CSV");
+                Console.WriteLine("4) Search by name or email");
+                Console.WriteLine("5) Filter by Tag");
+                Console.WriteLine("6) Export CSV");
                 Console.WriteLine("0) Exit");
 
                 switch (Console.ReadLine())
@@ -39,8 +40,9 @@ namespace ContactCatalog
                     case "1": Add(); break;
                     case "2": ListAll(); break;
                     case "3": SearchByName(); break;
-                    case "4": FilterByTag(); break;
-                    case "5": ExportCSV(); break;
+                    case "4": SearchByNameOrEmail(); break;
+                    case "5": FilterByTag(); break;
+                    case "6": ExportCSV(); break;
                     case "0": return;
                     default: Console.WriteLine("Invalid selection"); break;
                 }
@@ -105,12 +107,36 @@ namespace ContactCatalog
 
                 Console.WriteLine("\n== Found contacts ==");
                 foreach (var c in _service.SearchByName(name))
-                    Console.WriteLine($"{c.Id}: {c.Name}");
-                
+                    Console.WriteLine($"({c.Id}) {c.Name} <{c.Email}> [{string.Join(", ", c.Tags)}]");
+
             }
             catch (InvalidOperationException ex)
             {
                 _logger.LogWarning("Contacts with name could not be found: {Reason}", ex.Message);
+            }
+
+            Pause();
+        }
+
+
+        public void SearchByNameOrEmail()
+        {
+            try
+            {
+                Console.Clear();
+                Console.WriteLine("=== Contact Catalog : Search by name or email ===");
+
+                Console.Write("Seach: ");
+                var name = Console.ReadLine()!;
+
+                Console.WriteLine("\n== Found contacts ==");
+                foreach (var c in _service.SearchByNameOrEmail(name))
+                    Console.WriteLine($"({c.Id}) {c.Name} <{c.Email}> [{string.Join(", ", c.Tags)}]");
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning("Contacts with name or email could not be found: {Reason}", ex.Message);
             }
 
             Pause();

@@ -15,5 +15,7 @@ namespace ContactCatalog.Repositories
         IEnumerable<Contact> FilterByTag(string tag);
 
         IEnumerable<Contact> GetByEmail(string email);
+
+        IEnumerable<Contact> SearchByNameOrEmail(string nameOrEmail);
     }
 }

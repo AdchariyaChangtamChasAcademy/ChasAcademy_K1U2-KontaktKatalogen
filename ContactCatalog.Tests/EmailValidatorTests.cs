@@ -40,17 +40,17 @@ namespace ContactCatalog.Tests
             // Given, a contact service with one contact already added
             var logger = Mock.Of<ILogger<ContactService>>();
             var service = new ContactService(logger);
-            var existingContact = new Contact { Name = "Alice", Email = "a@a.com" };
+            var existingContact = new Contact { Name = "Alice", Email = "testDuplicate@mail.com" };
             service.AddContact(existingContact);
 
             // When, we try to add another contact with the same email
-            var newContact = new Contact { Name = "Bob", Email = "a@a.com" };
+            var newContact = new Contact { Name = "Bob", Email = "testDuplicate@mail.com" };
 
             // Then, a DuplicateEmailException is thrown
             var exception = Assert.Throws<DuplicateEmailException>(() => service.AddContact(newContact));
 
             // (Verify if exception message is as expected)
-            Assert.Equal("'a@a.com' already exists.", exception.Message);
+            Assert.Equal("'testDuplicate@mail.com' already exists.", exception.Message);
         }
     }
 }

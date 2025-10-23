@@ -18,6 +18,7 @@ namespace ContactCatalog
             service.AddContact(new Contact { Name = "Alice", Email = "alice@mail.com", Tags = new string[] { "Work", "Friend" }.ToList() });
             service.AddContact(new Contact { Name = "Bob", Email = "bob@mail.com", Tags = new string[] { "Club", "Friend", "Besty" }.ToList() });
             service.AddContact(new Contact { Name = "Charlie", Email = "charlie@mail.com", Tags = new string[] { "Work", "Rival" }.ToList() });
+            Console.Clear();
 
             menu.Run();
         }
