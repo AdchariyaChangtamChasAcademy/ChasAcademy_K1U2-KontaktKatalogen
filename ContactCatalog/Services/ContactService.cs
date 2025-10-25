@@ -115,7 +115,7 @@ namespace ContactCatalog.Services
             return foundContacts;
         }
 
-        public void ExportToCsv(IFileWriter fileWriter)
+        public void ExportToCsv(IFileWriter fileWriter, string filePath)
         {
             // Check for empty contacts
             if (_contacts == null || !_contacts.Any())
@@ -134,7 +134,7 @@ namespace ContactCatalog.Services
             fileWriter.Dispose();
 
             // Log information
-            _logger.LogInformation("Contacts exported to '{FilePath}'\n", Environment.CurrentDirectory);
+            _logger.LogInformation("Contacts exported to '{FilePath}'\n", filePath);
         }
 
         private string EscapeCsv(string value)
