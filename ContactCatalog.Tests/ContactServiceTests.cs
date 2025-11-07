@@ -68,9 +68,10 @@ namespace ContactCatalog.Tests
 
             // Mock file writer
             var writerMock = new Mock<IFileWriter>();
+            var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\.."));
 
             // When
-            service.ExportToCsv(writerMock.Object);
+            service.ExportToCsv(writerMock.Object, path);
 
             // Then
             // Header + 2 contacts = 3 WriteLine calls

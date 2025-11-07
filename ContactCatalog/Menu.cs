@@ -26,15 +26,18 @@ namespace ContactCatalog
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("=== Contact Catalog ===");
-                Console.WriteLine("1) Add");
-                Console.WriteLine("2) List");
-                Console.WriteLine("3) Search by name or email");
-                Console.WriteLine("4) Search by name");
-                Console.WriteLine("5) Search by email");
-                Console.WriteLine("6) Filter by Tag");
-                Console.WriteLine("7) Export CSV");
-                Console.WriteLine("0) Exit");
+                Console.WriteLine("=== Contact Catalog ===\n");
+                Console.WriteLine("[1] Add");
+                Console.WriteLine("[2] List");
+                Console.WriteLine("[3] Search by name or email");
+                Console.WriteLine("[4] Search by name");
+                Console.WriteLine("[5] Search by email");
+                Console.WriteLine("[6] Filter by Tag");
+                Console.WriteLine("[7] Export CSV");
+                Console.WriteLine("[0] Exit");
+
+
+                Console.Write("\nSelection: ");
 
                 switch (Console.ReadLine())
                 {
