@@ -87,7 +87,8 @@ The goal of this project is to:
 ## Possible Improvements
 - Add file or database storage (JSON, SQLite, etc.)
 - Create a menu-driven undo/redo system
-- Validate Phone number formats and names with regular expressions
+- Validate names with regular expressions of first and last name
+- Add phone number to contacts
 - Build a simple GUI or web front-end
 
 ## About the Developer
